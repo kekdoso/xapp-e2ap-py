@@ -66,7 +66,7 @@ RUN git clone --branch ${E2AP_VERSION} https://github.com/o-ran-sc/ric-plt-libe2
   && make \
   && make install
 
-COPY . ${XAPP_DIR}
+VOLUME [${XAPP_DIR}]
 WORKDIR ${XAPP_DIR}
 
 # ssh server 
