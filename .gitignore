@@ -4,8 +4,6 @@ log.txt
 rmr/*
 docs_and_diagrams/
 
-oai*/
-
 # documentation
 .tox
 docs/_build/
