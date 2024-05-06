@@ -22,8 +22,6 @@ from ricxappframe.xapp_frame import rmr, Xapp
 from ricxappframe.e2ap.asn1 import IndicationMsg, SubRequestMsg, ControlRequestMsg, ActionDefinition, SubsequentAction
 from ricxappframe.entities.rnib.nb_identity_pb2 import NbIdentity
 
-from  ran_messages_pb2 import *
-
 from time import sleep
 
 class e2apXapp:
