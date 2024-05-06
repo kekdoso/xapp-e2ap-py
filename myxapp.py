@@ -1,7 +1,14 @@
 import src.e2ap_xapp as e2ap_xapp
-from ran_messages_pb2 import *
+#from ran_messages_pb2 import *
 from time import sleep
 from ricxappframe.e2ap.asn1 import IndicationMsg
+
+import sys
+sys.path.append("oai-oran-protolib/builds/")
+from ran_messages_pb2 import *
+
+
+
 
 def xappLogic():
 
