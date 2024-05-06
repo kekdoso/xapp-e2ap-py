@@ -2,6 +2,7 @@
 
 git submodule update --init
 git submodule sync --recursive
+git submodule update --remote --merge
 cd oai-oran-protolib
-git fetch
 git checkout mrn-base
+git pull
