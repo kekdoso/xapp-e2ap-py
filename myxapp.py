@@ -66,14 +66,13 @@ def xappLogic():
                             if f.tell() == 0:
                                 writer = csv.writer(f)
                                 # write the rnti
-                                writer.writerow(["RNTI", ue.rnti])
-                                #write the cell load
-                                writer.writerow(["Cell load (PRB)", resp.param_map[2].int64_value])
+                                writer.writerow(["RNTI"])
+                                writer.writerow([ue.rnti])
                                 writer.writerow([])
-                                writer.writerow(["Time", "RSRP", "BER DL", "BER UP", "MCS DL", "MCS UP"])
+                                writer.writerow(["Time", "RSRP", "BER_DL", "BER_UP", "MCS_DL", "MCS_UP", "Cell_load_alloc_PRB"])
                             #write the data
                             writer = csv.writer(f)
-                            writer.writerow([elapsed_time, ue.meas_rsrp, ue.meas_ber_down, ue.meas_ber_up, ue.meas_mcs_down, ue.meas_mcs_up])
+                            writer.writerow([elapsed_time, ue.meas_rsrp, ue.meas_ber_down, ue.meas_ber_up, ue.meas_mcs_down, ue.meas_mcs_up, resp.param_map[2].int64_value])
                         print("___")
 
                     #print(resp)
