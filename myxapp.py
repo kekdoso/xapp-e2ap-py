@@ -6,6 +6,7 @@ from ricxappframe.e2ap.asn1 import IndicationMsg
 import sys
 sys.path.append("oai-oran-protolib/builds/")
 from ran_messages_pb2 import *
+import csv
 
 
 
@@ -29,10 +30,12 @@ def xappLogic():
         #connector.send_e2ap_control_request(e2sm_buffer,gnb)
     
     # read loop
-    sleep_time = 4
+    elapsed_time = 0
+    sleep_time = 0.5
     while True:
-        print("Sleeping {}s...".format(sleep_time))
+        print("Sleeping {}ms...".format(sleep_time*1000))
         sleep(sleep_time)
+        elapsed_time += sleep_time
         messgs = connector.get_queued_rx_message()
         if len(messgs) == 0:
             print("{} messages received while waiting".format(len(messgs)))
@@ -46,7 +49,34 @@ def xappLogic():
                     indm.decode(msg["payload"])
                     resp = RAN_indication_response()
                     resp.ParseFromString(indm.indication_message)
-                    print(resp)
+                    # print meas_rsrp for each element, consider the protobuf file
+                    for ue in resp.param_map[1].ue_list.ue_info:
+                        print("RNTI: {}".format(ue.rnti))
+                        print("-- RSRP: {}".format(ue.meas_rsrp))
+                        print("-- BER DL: {}".format(ue.meas_ber_down))
+                        print("-- BER UP: {}".format(ue.meas_ber_up))
+                        print("-- MCS DL: {}".format(ue.meas_mcs_down))
+                        print("-- MCS UP: {}".format(ue.meas_mcs_up))
+                        print("Cell load (PRB): {}".format(resp.param_map[2].int64_value))
+                        print("Elapsed time: {}".format(elapsed_time))
+
+                        filename = f"UE_{ue.rnti}.csv"
+                        #write the header if file is empty
+                        with open(filename, 'a') as f:
+                            if f.tell() == 0:
+                                writer = csv.writer(f)
+                                # write the rnti
+                                writer.writerow(["RNTI", ue.rnti])
+                                #write the cell load
+                                writer.writerow(["Cell load (PRB)", resp.param_map[2].int64_value])
+                                writer.writerow([])
+                                writer.writerow(["Time", "RSRP", "BER DL", "BER UP", "MCS DL", "MCS UP"])
+                            #write the data
+                            writer = csv.writer(f)
+                            writer.writerow([elapsed_time, ue.meas_rsrp, ue.meas_ber_down, ue.meas_ber_up, ue.meas_mcs_down, ue.meas_mcs_up])
+                        print("___")
+
+                    #print(resp)
                     print("___")
                 else:
                     print("Unrecognized E2AP message received from gNB {}".format(msg["meid"]))
@@ -55,7 +85,7 @@ def e2sm_report_request_buffer():
     master_mess = RAN_message()
     master_mess.msg_type = RAN_message_type.INDICATION_REQUEST
     inner_mess = RAN_indication_request()
-    inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.UE_LIST])
+    inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.UE_LIST, RAN_parameter.GNB_PRB])
     master_mess.ran_indication_request.CopyFrom(inner_mess)
     buf = master_mess.SerializeToString()
     return buf
